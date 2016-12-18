@@ -66,9 +66,70 @@
        (svg/svg {:width 600 :height 600})
        ))
 
+(defn test-equation
+  [t] (let [x (m/mix (- PI) PI t)] [x (* (Math/cos (* 0.5 x)) (Math/sin (* x x x)))]))
+
+(def linearspec
+  {:x-axis (viz/linear-axis
+             {:domain [(- PI) PI]
+              :range  [50 580]
+              :major  (/ PI 2)
+              :minor  (/ PI 4)
+              :pos    250})
+   :y-axis (viz/linear-axis
+             {:domain      [-1 1]
+              :range       [250 20]
+              :major       0.2
+              :minor       0.1
+              :pos         50
+              :label-dist  15
+              :label-style {:text-anchor "end"}})
+   :grid   {:attribs {:stroke "#caa"}
+            :minor-y true}
+   :data   [{:values  (map test-equation (m/norm-range 200))
+             :attribs {:fill "none" :stroke "#0af"}
+             :layout  viz/svg-line-plot}]})
+
+(defn linearimage
+  [spec]
+  (->> spec
+       (viz/svg-plot2d-cartesian)
+       (svg/svg {:width 600 :height 320}))
+  )
+
+(def linearareaspec
+  {:x-axis (viz/linear-axis
+             {:domain [(- PI) PI]
+              :range  [50 580]
+              :major  (/ PI 2)
+              :minor  (/ PI 4)
+              :pos    250})
+   :y-axis (viz/linear-axis
+             {:domain      [-1 1]
+              :range       [250 20]
+              :major       0.2
+              :minor       0.1
+              :pos         50
+              :label-dist  15
+              :label-style {:text-anchor "end"}})
+   :grid   {:attribs {:stroke "#caa"}
+            :minor-y true}
+   :data   [{:values  (map test-equation (m/norm-range 200))
+             :attribs {:fill "#0af"}
+             :layout  viz/svg-area-plot}]})
+
+(defn linearareaimage
+  [spec]
+  (->> spec
+       (viz/svg-plot2d-cartesian)
+       (svg/svg {:width 600 :height 320}))
+  )
+
 (defn main-panel []
   (let [name (re-frame/subscribe [:name])]
     (fn []
       [:div "Hello  " @name
        [loglinearimage loglinearspec]
-       [loglogimage loglogspec]])))
+       [loglogimage loglogspec]
+       [linearimage linearspec]
+       [linearareaimage linearareaspec]])))
